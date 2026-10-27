@@ -131,9 +131,9 @@ class MainWindow:
         cfg_theme = self.cfg.get("theme", {})
         self.colors = themes.derive_colors(cfg_theme.get("bg"), cfg_theme.get("fg"))
         colors = self.colors
-        family = cfg_theme.get("font_family", "微软雅黑")
-        size = int(cfg_theme.get("font_size", 15))
-        spacing = themes.spacing_pixels(size, float(cfg_theme.get("line_spacing", 1.6)))
+        family = cfg_theme.get("font_family", "宋体")
+        size = int(cfg_theme.get("font_size", 13))
+        spacing = themes.spacing_pixels(size, float(cfg_theme.get("line_spacing", 1.0)))
         key = self._key_color()
         if self.pure:
             # key may have changed (fg/theme edited while in pure mode) ->
@@ -309,7 +309,7 @@ class MainWindow:
                 name, self.current + 1, len(self.chapters), percent))
         else:
             parts.append("未打开书籍")
-        parts.append("Ctrl+Alt+H 隐藏 · Ctrl+Alt+T 只显文字 · 侧键翻章 · 中键上移菜单 · PgUp/PgDn 翻页")
+        parts.append("Ctrl+Alt+Z 隐藏 · Ctrl+Alt+T 只显文字 · 侧键翻章 · 中键上移菜单 · PgUp/PgDn 翻页")
         text = "  |  ".join(parts)
         if self._note:
             text += "　★ " + self._note
@@ -347,9 +347,9 @@ class MainWindow:
         colors = self.colors
         cfg_theme = self.cfg.get("theme", {})
         key = self._key_color()
-        family = cfg_theme.get("font_family", "微软雅黑")
-        size = int(cfg_theme.get("font_size", 15))
-        spacing = themes.spacing_pixels(size, float(cfg_theme.get("line_spacing", 1.6)))
+        family = cfg_theme.get("font_family", "宋体")
+        size = int(cfg_theme.get("font_size", 13))
+        spacing = themes.spacing_pixels(size, float(cfg_theme.get("line_spacing", 1.0)))
         if on:
             self._saved_geometry = self.root.geometry()
             self._toc_in_pure = self.toc_visible
@@ -515,7 +515,7 @@ class MainWindow:
     def _on_close(self):
         if bool(self.cfg.get("window.close_to_tray", True)):
             self.hide_to_tray()
-            self.status_note("已最小化到托盘，Ctrl+Alt+H 可再次呼出", 4000)
+            self.status_note("已最小化到托盘，Ctrl+Alt+Z 可再次呼出", 4000)
         else:
             self.quit_app()
 

@@ -50,6 +50,13 @@ class ConfigLoadTests(unittest.TestCase):
         self._write({"window": {"hide_taskbar": False}})
         self.assertIs(Config(self.path).get("window.hide_taskbar"), False)
 
+    def test_appearance_and_hide_hotkey_defaults(self):
+        cfg = Config(self.path)
+        self.assertEqual(cfg.get("theme.font_family"), "宋体")
+        self.assertEqual(cfg.get("theme.font_size"), 13)
+        self.assertEqual(cfg.get("theme.line_spacing"), 1.0)
+        self.assertEqual(cfg.get("hotkeys.hide"), "ctrl+alt+z")
+
     def test_corrupt_file_uses_defaults(self):
         with open(self.path, "w", encoding="utf-8") as fh:
             fh.write("{not json")

@@ -51,7 +51,7 @@ NAMED_KEYS = {
 def parse_combo(combo):
     parts = [p.strip().lower() for p in (combo or "").split("+") if p.strip()]
     if len(parts) < 2:
-        raise ValueError("快捷键必须包含修饰键，例如 ctrl+alt+h")
+        raise ValueError("快捷键必须包含修饰键，例如 ctrl+alt+z")
     *modifiers, key = parts
     mods = 0
     for name in modifiers:
