@@ -36,6 +36,7 @@ DEFAULTS = {
         "topmost": True,
         "toc_visible": True,
         "close_to_tray": True,
+        "hide_taskbar": True,
     },
     "reader": {
         "last_book": "",
@@ -50,7 +51,7 @@ def _merge(dst, src):
         if isinstance(value, dict) and isinstance(dst.get(key), dict):
             _merge(dst[key], value)
         else:
-            dst.setdefault(key, copy.deepcopy(value))
+            dst[key] = copy.deepcopy(value)
 
 
 class Config:

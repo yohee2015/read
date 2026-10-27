@@ -67,6 +67,8 @@ class ReaderView(tk.Frame):
         self.text.insert("end", body.lstrip("\n"))
         self.text.configure(state="disabled")
         self.text.mark_set("insert", "1.0")
+        if frac:
+            self.text.update_idletasks()
         self.moveto(frac)
 
     def frac(self):

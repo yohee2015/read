@@ -46,6 +46,7 @@ class MainWindow:
         self._note = ""
         self._note_after = None
         self._applied_regex = config.get("chapter_regex", "")
+        self._toolwindow = None
         self.hotkeys = None
         self.mouse = None
         self.tray = None
@@ -122,7 +123,7 @@ class MainWindow:
 
     def _key_color(self):
         stored = str(self.cfg.get("theme.key_color", "") or "").strip().lower()
-        if stored and stored != "#010101":
+        if stored and themes.key_gap_ok(self.colors["fg"], stored):
             return stored
         return themes.key_color_for(self.colors["fg"])
 
@@ -167,7 +168,19 @@ class MainWindow:
         alpha = 1.0 if self.pure else float(cfg_theme.get("alpha", 1.0))
         self.root.wm_attributes("-alpha", alpha)
 
+    def _apply_toolwindow(self):
+        want = bool(self.cfg.get("window.hide_taskbar", True))
+        if want == self._toolwindow:
+            return
+        self._toolwindow = want
+        # Tk recreates the top-level HWND when this attribute changes.
+        self.root.wm_attributes("-toolwindow", want)
+        if self.pure and self.mouse:
+            hwnd = user32.GetAncestor(int(self.root.winfo_id()), GA_ROOT)
+            self.mouse.wheel_hwnd = int(hwnd or 0)
+
     def apply_window_options(self):
+        self._apply_toolwindow()
         topmost = bool(self.cfg.get("window.topmost", False))
         self.root.wm_attributes("-topmost", topmost)
         hwnd = user32.GetAncestor(int(self.root.winfo_id()), GA_ROOT)
@@ -208,6 +221,7 @@ class MainWindow:
         if not chapters:
             messagebox.showerror("打开失败", "文件没有可显示的内容。", parent=self.root)
             return False
+        self._save_progress()
         self.chapters = chapters
         self.book_path = path
         index = 0
@@ -515,6 +529,12 @@ class MainWindow:
                     pass
         self.root.destroy()
 
+    def _save_progress(self):
+        if self.book_path and self.chapters:
+            self.cfg.remember_progress(
+                self.book_path, self.current, self.reader.frac()
+            )
+
     def _save_state(self):
         try:
             state = str(self.root.state())
@@ -528,10 +548,7 @@ class MainWindow:
             except tk.TclError:
                 geometry = ""
         self.cfg.set("window.geometry", self._saved_geometry)
-        if self.book_path and self.chapters:
-            self.cfg.remember_progress(
-                self.book_path, self.current, self.reader.frac()
-            )
+        self._save_progress()
         self.cfg.save()
 
     def _pump(self):

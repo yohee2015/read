@@ -32,16 +32,31 @@ def derive_colors(bg, fg=None, accent=None):
     return {"bg": bg, "fg": fg, "accent": accent, "hint": hint, "edge": edge}
 
 
-KEY_DELTA = 1
+KEY_SAFE_GAP = 24
 
 
-def key_color_for(fg, delta=KEY_DELTA):
+def key_color_for(fg, gap=KEY_SAFE_GAP):
     r, g, b = hex_to_rgb(fg)
+    gap = max(1, min(127, int(gap)))
 
     def shift(v):
-        return v - delta if v > 255 - delta else v + delta
+        return v - gap if v > 255 - gap else v + gap
 
     return "#%02x%02x%02x" % (shift(r), shift(g), shift(b))
+
+
+def key_gap_ok(fg, key, gap=KEY_SAFE_GAP):
+    if not isinstance(key, str):
+        return False
+    value = key.strip().lower()
+    digits = value[1:] if value.startswith("#") else ""
+    if len(digits) not in (3, 6):
+        return False
+    if any(ch not in "0123456789abcdef" for ch in digits):
+        return False
+    fg_rgb = hex_to_rgb(fg)
+    key_rgb = hex_to_rgb(value)
+    return all(abs(a - b) >= gap for a, b in zip(fg_rgb, key_rgb))
 
 
 def spacing_pixels(font_size, line_spacing):

@@ -18,6 +18,7 @@ INPUT_MOUSE = 0
 GA_ROOT = 2
 GWLV_EXSTYLE = -20
 WS_EX_TOPMOST = 0x0008
+WS_EX_TOOLWINDOW = 0x0080
 
 user32.GetWindowLongW.argtypes = [wintypes.HWND, ctypes.c_int]
 user32.GetWindowLongW.restype = ctypes.c_long
@@ -113,6 +114,13 @@ class SmokeRunner:
             window.apply_theme()
             self._record("alpha_applied",
                          abs(float(window.root.wm_attributes("-alpha")) - 0.65) < 1e-6)
+            hwnd = user32.GetAncestor(int(window.root.winfo_id()), GA_ROOT)
+            style = user32.GetWindowLongW(hwnd, GWLV_EXSTYLE)
+            self._record(
+                "toolwindow",
+                bool(style & WS_EX_TOOLWINDOW)
+                == bool(window.cfg.get("window.hide_taskbar", True)),
+            )
             window.goto_chapter(0)
             self._record("nav_next", window.nav_chapter(1) and window.current == 1)
             window.goto_chapter(0)
@@ -131,6 +139,7 @@ class SmokeRunner:
             self._record("pure_alpha", abs(float(window.root.wm_attributes("-alpha")) - 1.0) < 1e-6)
             key_bg = str(window.reader.text.cget("bg"))
             self._record("key_auto", key_bg == themes.key_color_for(window.colors["fg"]))
+            self._record("key_gap", themes.key_gap_ok(window.colors["fg"], key_bg))
             window.set_pure(False)
             self._record("pure_off", not window.pure)
             self._record("alpha_restored",

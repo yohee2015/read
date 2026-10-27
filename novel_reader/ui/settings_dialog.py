@@ -83,6 +83,7 @@ class SettingsDialog(tk.Toplevel):
         self.v_alpha = tk.DoubleVar(value=float(theme.get("alpha", 1.0)))
         self.v_topmost = tk.BooleanVar(value=bool(window.get("topmost", False)))
         self.v_close_tray = tk.BooleanVar(value=bool(window.get("close_to_tray", True)))
+        self.v_hide_taskbar = tk.BooleanVar(value=bool(window.get("hide_taskbar", True)))
         self.v_mouse_on = tk.BooleanVar(value=bool(mouse.get("enabled", True)))
         self.v_side = tk.BooleanVar(value=bool(mouse.get("side_buttons", True)))
         self.v_side_global = tk.BooleanVar(value=bool(mouse.get("side_global", False)))
@@ -151,6 +152,11 @@ class SettingsDialog(tk.Toplevel):
                        bg=colors["bg"], fg=colors["fg"], activebackground=colors["bg"],
                        activeforeground=colors["fg"], selectcolor=colors["edge"],
                        highlightthickness=0).pack(side="left", padx=(16, 0))
+        tk.Checkbutton(window_frame, text="不在任务栏显示（仅托盘图标，Alt+Tab 也不显示）",
+                       variable=self.v_hide_taskbar, anchor="w",
+                       bg=colors["bg"], fg=colors["fg"], activebackground=colors["bg"],
+                       activeforeground=colors["fg"], selectcolor=colors["edge"],
+                       highlightthickness=0).pack(fill="x", pady=(4, 0))
 
         mouse_frame = self._frame(self, "鼠标快捷键")
         row5 = tk.Frame(mouse_frame, bg=colors["bg"])
@@ -277,6 +283,7 @@ class SettingsDialog(tk.Toplevel):
         self.v_alpha.set(theme["alpha"])
         self.v_topmost.set(defaults["window"]["topmost"])
         self.v_close_tray.set(defaults["window"]["close_to_tray"])
+        self.v_hide_taskbar.set(defaults["window"]["hide_taskbar"])
         self.v_mouse_on.set(defaults["mouse"]["enabled"])
         self.v_side.set(defaults["mouse"]["side_buttons"])
         self.v_side_global.set(defaults["mouse"]["side_global"])
@@ -303,6 +310,7 @@ class SettingsDialog(tk.Toplevel):
         cfg.set("theme.alpha", float(self.v_alpha.get()))
         cfg.set("window.topmost", bool(self.v_topmost.get()))
         cfg.set("window.close_to_tray", bool(self.v_close_tray.get()))
+        cfg.set("window.hide_taskbar", bool(self.v_hide_taskbar.get()))
         cfg.set("mouse.enabled", bool(self.v_mouse_on.get()))
         cfg.set("mouse.side_buttons", bool(self.v_side.get()))
         cfg.set("mouse.side_global", bool(self.v_side_global.get()))
